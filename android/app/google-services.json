@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "174881424331",
+    "project_id": "flyerdeal-f6a40",
+    "storage_bucket": "flyerdeal-f6a40.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:174881424331:android:9ef068991b779040ef6c4e",
+        "android_client_info": {
+          "package_name": "com.example.flyerdeal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "174881424331-m5p806809adgcpu629m9ijc1hbpqr4vq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCB4bkFuLCbhCNPyJhHdk_2s8_qT301ru8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "174881424331-m5p806809adgcpu629m9ijc1hbpqr4vq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

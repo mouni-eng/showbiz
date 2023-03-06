@@ -1,10 +1,28 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flyerdeal/infrastructure/exceptions.dart';
+import 'package:flyerdeal/models/flyer_model.dart';
+import 'package:flyerdeal/models/store_model.dart';
 
 void printLn(Object? object) {
   if (kDebugMode) {
     print(object);
+  }
+}
+
+class CheckUtil {
+  static isFavourite(
+      {required FlyerModel flyerModel, required List<FlyerModel> favourites}) {
+    bool isFav = favourites.any((flyerToCheck) => flyerToCheck.id == flyerModel.id);
+    print(isFav);
+    return isFav;
+  }
+
+  static isStoreFavourite(
+      {required StoreModel storeModel, required List<StoreModel> favourites}) {
+    bool isFav = favourites.any((storeToCheck) => storeToCheck.id == storeModel.id);
+    print(isFav);
+    return isFav;
   }
 }
 

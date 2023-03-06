@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flyerdeal/constants.dart';
+import 'package:flyerdeal/models/user_model.dart';
 import 'package:flyerdeal/services/auth_service.dart';
 import 'package:flyerdeal/services/language_service.dart';
 import 'package:flyerdeal/view_models/app_cubit/states.dart';
+import 'package:flyerdeal/views/admin_views/admin_layout.dart';
+import 'package:flyerdeal/views/client_views/layout_screen.dart';
 
 class AppCubit extends Cubit<AppStates> {
   AppCubit() : super(AppStates());
@@ -34,5 +38,14 @@ class AppCubit extends Cubit<AppStates> {
       print((error.toString()));
       emit(GetUserErrorState());
     });
+  }
+
+  Widget? currentView() {
+    Widget? view = const ClientLayoutView();
+    if(userModel != null) {
+      view = userModel?.role == UserRole.client ? const ClientLayoutView() : const AdminLayoutView();
+    }
+      
+    return view;
   }
 }

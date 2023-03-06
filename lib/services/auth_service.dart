@@ -60,7 +60,7 @@ class AuthService {
       {required phoneNumber,
       required void Function(String, int?) onSent}) async {
     await _auth.verifyPhoneNumber(
-      phoneNumber: "+20$phoneNumber",
+      phoneNumber: phoneNumber,
       verificationCompleted: (PhoneAuthCredential auth) {},
       verificationFailed: (FirebaseAuthException e) {},
       codeSent: onSent,
@@ -71,5 +71,9 @@ class AuthService {
   Future<void> confirmOtp({required vId, required code}) async {
     await _auth.signInWithCredential(
         PhoneAuthProvider.credential(verificationId: vId!, smsCode: code!));
+  }
+
+  Future<void> resetPassword({required String email}) async {
+    await _auth.sendPasswordResetEmail(email: email);
   }
 }

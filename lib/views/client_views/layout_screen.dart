@@ -1,6 +1,4 @@
-import 'package:flutter/services.dart';
 import 'package:flyerdeal/constants.dart';
-import 'package:flyerdeal/services/language_service.dart';
 import 'package:flyerdeal/size_config.dart';
 import 'package:flyerdeal/view_models/client_cubit/cubit.dart';
 import 'package:flyerdeal/view_models/client_cubit/states.dart';
@@ -9,7 +7,9 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flyerdeal/view_models/home_cubit/cubit.dart';
 import 'package:flyerdeal/view_models/profile_cubit/cubit.dart';
+import 'package:flyerdeal/view_models/wishlist_cubit/cubit.dart';
 import 'package:flyerdeal/views/AuthViews/LoginViews/login_view.dart';
 import 'package:flyerdeal/widgets/custom_navigation.dart';
 
@@ -24,13 +24,11 @@ class ClientLayoutView extends StatelessWidget {
       listener: (context, state) {
         if (state is OnChangeBottomNavIndex) {
           if (state.index == 1) {
-            /*SearchCubit.get(context).getMapRentals();
-            state.completeNavigation(true);*/
+            HomeCubit.get(context).getAllStores();
+          } else if (state.index == 0) {
+            HomeCubit.get(context).getAllFlyers();
           } else if (state.index == 2) {
-            /*rentxcontext
-                .requireAuth(
-                    () => ClientBookingsCubit.get(context).getBookings())
-                .then((value) => state.completeNavigation(value));*/
+            WishListCubit.get(context).getAllFavourites();
           } else if (state.index == 3) {
             ProfileCubit.get(context).getUserData().then((value) {
               if (userModel == null) {

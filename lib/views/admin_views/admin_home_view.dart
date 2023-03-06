@@ -26,50 +26,53 @@ class AdminHomeView extends StatelessWidget {
               child: Padding(
                 padding: padding,
                 child: ConditionalBuilder(
-                  condition: state is! GetAllDataLoadingState,
-                  fallback: (context) => const Center(child: CircularProgressIndicator.adaptive(),),
-                  builder: (context) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        const AuthenticatedHeader(),
-                        SizedBox(
-                          height: height(35),
+                    condition: state is! GetAllDataLoadingState,
+                    fallback: (context) => const Center(
+                          child: CircularProgressIndicator.adaptive(),
                         ),
-                        CustomText(
-                          fontSize: width(24),
-                          text: "Dashboard",
-                          fontWeight: FontWeight.w600,
-                        ),
-                        SizedBox(
-                          height: height(25),
-                        ),
-                        CustomInfoCard(
-                          icon: "assets/images/peoples.svg",
-                          title: "Total Users",
-                          length: cubit.users.length,
-                        ),
-                        SizedBox(
-                          height: height(35),
-                        ),
-                        CustomInfoCard(
-                          icon: "assets/icons/stores.svg",
-                          title: "Total Flyers",
-                          length: cubit.flyers.length,
-                        ),
-                        SizedBox(
-                          height: height(35),
-                        ),
-                        CustomInfoCard(
-                          icon: "assets/icons/stores.svg",
-                          title: "Total Stores",
-                          length: cubit.stores.length,
-                        ),
-                      ],
-                    );
-                  }
-                ),
+                    builder: (context) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          userModel == null
+                              ? const NotAuthenticatedHeader()
+                              : const AuthenticatedHeader(),
+                          SizedBox(
+                            height: height(35),
+                          ),
+                          CustomText(
+                            fontSize: width(24),
+                            text: "Dashboard",
+                            fontWeight: FontWeight.w600,
+                          ),
+                          SizedBox(
+                            height: height(25),
+                          ),
+                          CustomInfoCard(
+                            icon: "assets/images/peoples.svg",
+                            title: "Total Users",
+                            length: cubit.users.length,
+                          ),
+                          SizedBox(
+                            height: height(35),
+                          ),
+                          CustomInfoCard(
+                            icon: "assets/icons/stores.svg",
+                            title: "Total Flyers",
+                            length: cubit.flyers.length,
+                          ),
+                          SizedBox(
+                            height: height(35),
+                          ),
+                          CustomInfoCard(
+                            icon: "assets/icons/stores.svg",
+                            title: "Total Stores",
+                            length: cubit.stores.length,
+                          ),
+                        ],
+                      );
+                    }),
               ),
             ),
           );

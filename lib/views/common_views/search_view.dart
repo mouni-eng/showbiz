@@ -4,7 +4,11 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flyerdeal/constants.dart';
+import 'package:flyerdeal/models/category_model.dart';
+import 'package:flyerdeal/models/flyer_model.dart';
 import 'package:flyerdeal/size_config.dart';
+import 'package:flyerdeal/view_models/home_cubit/cubit.dart';
+import 'package:flyerdeal/view_models/home_cubit/states.dart';
 import 'package:flyerdeal/view_models/searching_cubit/cubit.dart';
 import 'package:flyerdeal/view_models/searching_cubit/states.dart';
 import 'package:flyerdeal/views/client_views/home_view.dart';
@@ -23,6 +27,7 @@ class SearchView extends StatelessWidget {
         listener: (context, state) {},
         builder: (context, state) {
           var cubit = SearchCubit.get(context);
+          var homeCubit = HomeCubit.get(context);
           return Scaffold(
             body: SafeArea(
                 child: Padding(
@@ -37,7 +42,10 @@ class SearchView extends StatelessWidget {
                         onTap: () {
                           Navigator.pop(context);
                         },
-                        child: const Icon(Icons.arrow_back_ios_new_rounded),
+                        child: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: color.primaryColorDark,
+                        ),
                       ),
                       CustomText(
                         fontSize: width(20),
@@ -49,68 +57,24 @@ class SearchView extends StatelessWidget {
                           showModalBottomSheet(
                             backgroundColor: Colors.transparent,
                             context: context,
-                            builder: (context) => Container(
-                              height: SizeConfig.screenHeight! / 2,
-                              width: double.infinity,
-                              padding: padding,
-                              decoration: BoxDecoration(
-                                color: color.backgroundColor.withOpacity(0.95),
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Center(
-                                    child: CustomText(
-                                      fontSize: width(20),
-                                      text: "Sort & Filter",
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: height(15),
-                                  ),
-                                  CustomText(
-                                    fontSize: width(20),
-                                    text: "Categories",
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  SizedBox(
-                                    height: height(15),
-                                  ),
-                                  SizedBox(
-                                    height: height(80),
-                                    child: ListView.separated(
-                                      shrinkWrap: true,
-                                      physics: const BouncingScrollPhysics(),
-                                      scrollDirection: Axis.horizontal,
-                                      itemBuilder: (context, index) =>
-                                          CategoryCard(
-                                        title: "Electronics",
-                                        selected: false,
-                                        onTap: () {
-                                          //cubit.changeCategory(cubit.categories[index]);
+                            builder: (context) =>
+                                BlocConsumer<SearchCubit, SearchStates>(
+                                    listener: (context, state) {},
+                                    builder: (context, state) {
+                                      var cubit = SearchCubit.get(context);
+                                      return FilterBottomSheet(
+                                        category: cubit.category!,
+                                        categories: homeCubit.categories,
+                                        flyers: homeCubit.flyers,
+                                        onChanged: (index) {
+                                          cubit.changeCategory(
+                                            value: homeCubit
+                                                .categories[index].key!,
+                                            flyers: homeCubit.flyers,
+                                          );
                                         },
-                                      ),
-                                      separatorBuilder: (context, index) =>
-                                          SizedBox(
-                                        width: width(15),
-                                      ),
-                                      itemCount: 8,
-                                    ),
-                                  ),
-                                  Spacer(),
-                                  CustomButton(
-                                    fontSize: width(16),
-                                    function: () {},
-                                    text: "Submit Filter",
-                                  ),
-                                ],
-                              ),
-                            ),
+                                      );
+                                    }),
                           );
                         },
                         child: SvgPicture.asset(
@@ -128,7 +92,12 @@ class SearchView extends StatelessWidget {
                   CustomFormField(
                     context: context,
                     hintText: "Search for flyers..",
-                    onChange: (value) {},
+                    onChange: (value) {
+                      cubit.searchList(
+                        query: value,
+                        flyers: HomeCubit.get(context).flyers,
+                      );
+                    },
                     suffix: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: SvgPicture.asset(
@@ -171,5 +140,87 @@ class SearchView extends StatelessWidget {
             )),
           );
         });
+  }
+}
+
+class FilterBottomSheet extends StatelessWidget {
+  const FilterBottomSheet({
+    Key? key,
+    required this.category,
+    required this.categories,
+    required this.flyers,
+    required this.onChanged,
+  }) : super(key: key);
+
+  final String category;
+  final List<CategoryModel> categories;
+  final List<FlyerModel> flyers;
+  final Function(int index) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    var color = Theme.of(context);
+    return Container(
+      height: SizeConfig.screenHeight! / 2,
+      width: double.infinity,
+      padding: padding,
+      decoration: BoxDecoration(
+        color: color.backgroundColor.withOpacity(0.95),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: CustomText(
+              fontSize: width(20),
+              text: "Sort & Filter",
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(
+            height: height(15),
+          ),
+          CustomText(
+            fontSize: width(20),
+            text: "Categories",
+            fontWeight: FontWeight.w600,
+          ),
+          SizedBox(
+            height: height(15),
+          ),
+          SizedBox(
+            height: height(80),
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) => CategoryCard(
+                title: categories[index].key!,
+                selected: category == categories[index].key!,
+                onTap: () {
+                  onChanged(index);
+                },
+              ),
+              separatorBuilder: (context, index) => SizedBox(
+                width: width(15),
+              ),
+              itemCount: categories.length,
+            ),
+          ),
+          const Spacer(),
+          CustomButton(
+            fontSize: width(16),
+            function: () {
+              Navigator.pop(context);
+            },
+            text: "Submit Filter",
+          ),
+        ],
+      ),
+    );
   }
 }

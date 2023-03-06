@@ -71,10 +71,10 @@ class CategoryListingView extends StatelessWidget {
                       physics: const BouncingScrollPhysics(),
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) => CategoryCard(
-                        title: cubit.categories[index],
-                        selected: cubit.category == cubit.categories[index],
+                        title: cubit.categories[index].key!,
+                        selected: cubit.category == cubit.categories[index].key,
                         onTap: () {
-                          cubit.changeCategory(cubit.categories[index]);
+                          cubit.changeCategory(cubit.categories[index].key!);
                         },
                       ),
                       separatorBuilder: (context, index) => SizedBox(
@@ -91,12 +91,12 @@ class CategoryListingView extends StatelessWidget {
                       shrinkWrap: true,
                       physics: const BouncingScrollPhysics(),
                       itemBuilder: (context, index) => FlyerHorizontalCard(
-                        flyerModel: flyerModel,
+                        flyerModel: cubit.filterdFlyers[index],
                       ),
                       separatorBuilder: (context, index) => SizedBox(
                         height: height(25),
                       ),
-                      itemCount: 6,
+                      itemCount: cubit.filterdFlyers.length,
                     ),
                   ),
                 ],

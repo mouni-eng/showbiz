@@ -1,7 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flyerdeal/models/store_model.dart';
 
 class FlyerModel {
-  String? name, category, image, flyerPdf;
+  String? name, category, image, flyerPdf, id;
   StoreModel? store;
   DateTime? from, to;
 
@@ -22,6 +23,7 @@ class FlyerModel {
     category = json['category'];
     image = json['image'];
     flyerPdf = json['flyerPdf'];
+    id = json['id'];
     from = json['from'].toDate();
     to = json['to'].toDate();
     store = StoreModel.fromJson(json['store']);
@@ -32,6 +34,7 @@ class FlyerModel {
         'category': store!.category,
         'image': image,
         'flyerPdf': flyerPdf,
+        'id': id ?? UniqueKey().hashCode.toString(),
         'from': from ?? from?.toIso8601String(),
         'to': to ?? to?.toIso8601String(),
         'store': store!.toJson(),

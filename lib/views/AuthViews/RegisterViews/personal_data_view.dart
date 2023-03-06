@@ -16,6 +16,7 @@ import 'package:flyerdeal/views/AuthViews/LoginViews/login_view.dart';
 import 'package:flyerdeal/widgets/circle_image.dart';
 import 'package:flyerdeal/widgets/custom_button.dart';
 import 'package:flyerdeal/widgets/custom_text.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 
 import '../../../view_models/auth_cubit/states.dart';
 
@@ -82,12 +83,76 @@ class PersonalDataView extends StatelessWidget {
                     onChange: (value) {
                       cubit.onChangeSurName(value);
                     }),
-                PropertiesWidget(
-                    title: "Phone Number",
-                    isPhoneNumber: true,
-                    onChange: (value) {
-                      cubit.onChangePhoneNumber(value);
-                    }),
+                CustomText(
+                  fontSize: width(16),
+                  text: "Phone Number",
+                  color: color.primaryColorDark,
+                ),
+                SizedBox(
+                  height: height(15),
+                ),
+                IntlPhoneField(
+                  decoration: InputDecoration(
+                    alignLabelWithHint: false,
+                    filled: true,
+                    fillColor: color.backgroundColor,
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    floatingLabelStyle: TextStyle(
+                      color: color.primaryColor,
+                      fontSize: width(20),
+                    ),
+                    counterStyle: TextStyle(
+                      color: color.hintColor,
+                      fontSize: width(14),
+                      height: 1.2,
+                    ),
+                    labelStyle: TextStyle(
+                      color: color.hintColor,
+                      fontSize: width(14),
+                      height: 1.2,
+                    ),
+                    labelText: '|  Phone Number',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(
+                        color: Colors.transparent,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color: color.hintColor.withOpacity(0.4),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color: color.primaryColor,
+                      ),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: height(20),
+                      horizontal: width(20),
+                    ),
+                  ),
+                  initialCountryCode: 'EG',
+                  flagsButtonPadding: EdgeInsets.only(
+                    top: height(20),
+                    bottom: height(20),
+                    left: width(20),
+                  ),
+                  disableLengthCheck: true,
+                  showCountryFlag: true,
+                  showDropdownIcon: false,
+                  onChanged: (phone) {
+                    cubit.onChangePhoneNumber(
+                        "${phone.countryCode}${phone.number}");
+                    print(cubit.signUpRequest.phoneNumber);
+                  },
+                ),
+                SizedBox(
+                  height: height(25),
+                ),
                 BirthdayPicker(
                   birthdate: cubit.signUpRequest.birthdate,
                   onChange: cubit.onChangeBirthDate,
@@ -160,15 +225,14 @@ class BirthdayPicker extends StatelessWidget {
           ),
           Container(
             width: double.infinity,
-            height: height(47),
+            height: height(60),
             padding: EdgeInsets.symmetric(
                 horizontal: width(15), vertical: height(10)),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: Colors.transparent,
+                color: color.hintColor.withOpacity(0.4),
               ),
-              boxShadow: [boxShadow],
               color: color.backgroundColor,
             ),
             child: CustomText(

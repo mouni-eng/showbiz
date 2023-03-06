@@ -1,3 +1,4 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -6,9 +7,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flyerdeal/constants.dart';
 import 'package:flyerdeal/models/flyer_model.dart';
 import 'package:flyerdeal/size_config.dart';
-import 'package:flyerdeal/view_models/Favourites_cubit/cubit.dart';
-import 'package:flyerdeal/view_models/Favourites_cubit/states.dart';
-import 'package:flyerdeal/views/client_views/home_view.dart';
+import 'package:flyerdeal/view_models/wishlist_cubit/cubit.dart';
+import 'package:flyerdeal/view_models/wishlist_cubit/states.dart';
 import 'package:flyerdeal/views/client_views/stores_view.dart';
 import 'package:flyerdeal/views/common_views/flyer_listing_view.dart';
 import 'package:flyerdeal/views/common_views/search_view.dart';
@@ -21,10 +21,10 @@ class WishListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var color = Theme.of(context);
-    return BlocConsumer<FavouritesCubit, FavouritesStates>(
+    return BlocConsumer<WishListCubit, WishListStates>(
         listener: (context, state) {},
         builder: (context, state) {
-          var cubit = FavouritesCubit.get(context);
+          var cubit = WishListCubit.get(context);
           return SafeArea(
             child: Padding(
               padding: padding,
@@ -84,31 +84,43 @@ class WishListView extends StatelessWidget {
                   ),
                   cubit.favouriteType == Type.stores
                       ? Expanded(
-                          child: ListView.separated(
-                            shrinkWrap: true,
-                            physics: const BouncingScrollPhysics(),
-                            itemBuilder: (context, index) =>
-                                StoreHorizontalCard(
-                              storeModel: cubit.stores[index],
-                            ),
-                            separatorBuilder: (context, index) => SizedBox(
-                              height: height(25),
-                            ),
-                            itemCount: cubit.stores.length,
+                          child: ConditionalBuilder(
+                            condition: state is! GetWishListLoadingState,
+                            fallback: (context) => const Center(child: CircularProgressIndicator.adaptive()),
+                            builder: (context) {
+                              return ListView.separated(
+                                shrinkWrap: true,
+                                physics: const BouncingScrollPhysics(),
+                                itemBuilder: (context, index) =>
+                                    StoreHorizontalCard(
+                                  storeModel: cubit.stores[index],
+                                ),
+                                separatorBuilder: (context, index) => SizedBox(
+                                  height: height(25),
+                                ),
+                                itemCount: cubit.stores.length,
+                              );
+                            }
                           ),
                         )
                       : Expanded(
-                          child: ListView.separated(
-                            shrinkWrap: true,
-                            physics: const BouncingScrollPhysics(),
-                            itemBuilder: (context, index) =>
-                                FlyerHorizontalCard(
-                              flyerModel: cubit.flyers[index],
-                            ),
-                            separatorBuilder: (context, index) => SizedBox(
-                              height: height(25),
-                            ),
-                            itemCount: cubit.flyers.length,
+                          child: ConditionalBuilder(
+                            condition: state is! GetWishListLoadingState,
+                            fallback: (context) => const Center(child: CircularProgressIndicator.adaptive()),
+                            builder: (context) {
+                              return ListView.separated(
+                                shrinkWrap: true,
+                                physics: const BouncingScrollPhysics(),
+                                itemBuilder: (context, index) =>
+                                    FlyerHorizontalCard(
+                                  flyerModel: cubit.favourites[index],
+                                ),
+                                separatorBuilder: (context, index) => SizedBox(
+                                  height: height(25),
+                                ),
+                                itemCount: cubit.favourites.length,
+                              );
+                            }
                           ),
                         ),
                 ],

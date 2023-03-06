@@ -1,12 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flyerdeal/constants.dart';
+import 'package:flyerdeal/infrastructure/utils.dart';
+import 'package:flyerdeal/models/flyer_model.dart';
 import 'package:flyerdeal/size_config.dart';
 import 'package:flyerdeal/view_models/home_cubit/cubit.dart';
 import 'package:flyerdeal/view_models/home_cubit/states.dart';
+import 'package:flyerdeal/view_models/wishlist_cubit/cubit.dart';
 import 'package:flyerdeal/views/AuthViews/LoginViews/login_view.dart';
+import 'package:flyerdeal/views/common_views/Notification_view.dart';
 import 'package:flyerdeal/views/common_views/category_listing_view.dart';
 import 'package:flyerdeal/views/common_views/flyer_detail_view.dart';
 import 'package:flyerdeal/views/common_views/flyer_listing_view.dart';
@@ -15,6 +20,8 @@ import 'package:flyerdeal/widgets/cached_image.dart';
 import 'package:flyerdeal/widgets/custom_button.dart';
 import 'package:flyerdeal/widgets/custom_navigation.dart';
 import 'package:flyerdeal/widgets/custom_text.dart';
+
+import '../../view_models/wishlist_cubit/states.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -58,26 +65,34 @@ class HomeView extends StatelessWidget {
                       ),
                       SizedBox(
                         height: height(80),
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          physics: const BouncingScrollPhysics(),
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) => CategoryCard(
-                            title: cubit.categories[index],
-                            selected: false,
-                            onTap: () {
-                              cubit.changeCategory(cubit.categories[index]);
-                              navigateTo(
-                                view: const CategoryListingView(),
-                                context: context,
+                        child: ConditionalBuilder(
+                            condition: state is! GetAllCategoriesLoading,
+                            fallback: (context) => const Center(
+                                  child: CircularProgressIndicator.adaptive(),
+                                ),
+                            builder: (context) {
+                              return ListView.separated(
+                                shrinkWrap: true,
+                                physics: const BouncingScrollPhysics(),
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) => CategoryCard(
+                                  title: cubit.categories[index].key!,
+                                  selected: false,
+                                  onTap: () {
+                                    cubit.changeCategory(
+                                        cubit.categories[index].key!);
+                                    navigateTo(
+                                      view: const CategoryListingView(),
+                                      context: context,
+                                    );
+                                  },
+                                ),
+                                separatorBuilder: (context, index) => SizedBox(
+                                  width: width(15),
+                                ),
+                                itemCount: cubit.categories.length,
                               );
-                            },
-                          ),
-                          separatorBuilder: (context, index) => SizedBox(
-                            width: width(15),
-                          ),
-                          itemCount: cubit.categories.length,
-                        ),
+                            }),
                       ),
                       SizedBox(
                         height: height(30),
@@ -86,9 +101,7 @@ class HomeView extends StatelessWidget {
                         title: "Latest Flyers",
                         onTap: () {
                           navigateTo(
-                            view: const FlyerListingView(
-                              title: "Latest Flyers",
-                            ),
+                            view: const FlyerListingView(),
                             context: context,
                           );
                         },
@@ -98,17 +111,26 @@ class HomeView extends StatelessWidget {
                       ),
                       SizedBox(
                         height: height(360),
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          physics: const BouncingScrollPhysics(),
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) =>
-                              const FlyerCardWidget(),
-                          separatorBuilder: (context, index) => SizedBox(
-                            width: width(15),
-                          ),
-                          itemCount: 5,
-                        ),
+                        child: ConditionalBuilder(
+                            condition: state is! GetAllFlyersLoading,
+                            fallback: (context) => const Center(
+                                  child: CircularProgressIndicator.adaptive(),
+                                ),
+                            builder: (context) {
+                              return ListView.separated(
+                                shrinkWrap: true,
+                                physics: const BouncingScrollPhysics(),
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) =>
+                                    FlyerCardWidget(
+                                  flyer: cubit.flyers[index],
+                                ),
+                                separatorBuilder: (context, index) => SizedBox(
+                                  width: width(15),
+                                ),
+                                itemCount: cubit.flyers.length,
+                              );
+                            }),
                       ),
                     ],
                   ),
@@ -123,7 +145,10 @@ class HomeView extends StatelessWidget {
 class FlyerCardWidget extends StatelessWidget {
   const FlyerCardWidget({
     Key? key,
+    required this.flyer,
   }) : super(key: key);
+
+  final FlyerModel flyer;
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +172,7 @@ class FlyerCardWidget extends StatelessWidget {
             children: [
               Center(
                 child: Image.network(
-                  "https://static.shopping-canada.com/staples-deal-of-the-week-on-from-february-19-to-february-25-2020-page-10.jpg",
+                  flyer.image ?? "",
                   width: width(150),
                   height: height(180),
                   fit: BoxFit.cover,
@@ -173,7 +198,31 @@ class FlyerCardWidget extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const FavouriteButton(),
+                  BlocConsumer<WishListCubit, WishListStates>(
+                      listener: (context, state) {},
+                      builder: (context, state) {
+                        WishListCubit cubit = WishListCubit.get(context);
+                        return ConditionalBuilder(
+                            condition: state is! GetWishListLoadingState,
+                            fallback: (context) => Container(),
+                            builder: (context) {
+                              return FavouriteButton(
+                                onPressed: () {
+                                  cubit.toogleFavourite(
+                                    isFavourite: CheckUtil.isFavourite(
+                                      flyerModel: flyer,
+                                      favourites: cubit.favourites,
+                                    ),
+                                    flyer: flyer,
+                                  );
+                                },
+                                isFavourite: CheckUtil.isFavourite(
+                                  flyerModel: flyer,
+                                  favourites: cubit.favourites,
+                                ),
+                              );
+                            });
+                      }),
                 ],
               )
             ],
@@ -183,7 +232,7 @@ class FlyerCardWidget extends StatelessWidget {
           ),
           CustomText(
             fontSize: width(16),
-            text: "Peavy Mart Flyer",
+            text: flyer.name!,
             fontWeight: FontWeight.w600,
             maxlines: 1,
           ),
@@ -192,7 +241,7 @@ class FlyerCardWidget extends StatelessWidget {
           ),
           CustomText(
             fontSize: width(14),
-            text: "Office & Tables",
+            text: flyer.category!,
             maxlines: 1,
             color: color.hintColor,
             fontWeight: FontWeight.w400,
@@ -206,7 +255,10 @@ class FlyerCardWidget extends StatelessWidget {
                 child: CustomText(
                   fontSize: width(13),
                   color: color.hintColor.withOpacity(0.6),
-                  text: "Valid till 6 days",
+                  text: DateUtil.displayDiffrence(
+                    flyer.from!,
+                    flyer.to!,
+                  ),
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -217,7 +269,11 @@ class FlyerCardWidget extends StatelessWidget {
                   fontSize: width(15),
                   fontWeight: FontWeight.w400,
                   function: () {
-                    navigateTo(view: FlyerDetailsView(), context: context);
+                    navigateTo(
+                        view: FlyerDetailsView(
+                          flyerModel: flyer,
+                        ),
+                        context: context);
                   },
                   text: "Details",
                 ),
@@ -233,23 +289,40 @@ class FlyerCardWidget extends StatelessWidget {
 class FavouriteButton extends StatelessWidget {
   const FavouriteButton({
     Key? key,
+    this.isFavourite = false,
+    required this.onPressed,
   }) : super(key: key);
+
+  final bool? isFavourite;
+  final Function() onPressed;
 
   @override
   Widget build(BuildContext context) {
     var color = Theme.of(context);
 
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: color.hintColor.withOpacity(0.2),
-        shape: BoxShape.circle,
-      ),
-      child: SvgPicture.asset(
-        "assets/icons/heart.svg",
-        color: color.primaryColorDark,
-        width: width(20),
-        height: height(20),
+    return GestureDetector(
+      onTap: userModel != null
+          ? onPressed
+          : () {
+              navigateTo(
+                view: LoginView(),
+                context: context,
+              );
+            },
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: isFavourite!
+              ? color.primaryColor
+              : color.hintColor.withOpacity(0.2),
+          shape: BoxShape.circle,
+        ),
+        child: SvgPicture.asset(
+          "assets/icons/heart.svg",
+          color: isFavourite! ? color.backgroundColor : color.primaryColorDark,
+          width: width(20),
+          height: height(20),
+        ),
       ),
     );
   }
@@ -468,11 +541,19 @@ class AuthenticatedHeader extends StatelessWidget {
           ],
         ),
         const Spacer(),
-        SvgPicture.asset(
-          "assets/images/remind.svg",
-          color: color.hintColor,
-          width: width(40),
-          height: height(40),
+        GestureDetector(
+          onTap: () {
+            navigateTo(
+              view: const NotificationView(),
+              context: context,
+            );
+          },
+          child: SvgPicture.asset(
+            "assets/images/remind.svg",
+            color: color.hintColor,
+            width: width(40),
+            height: height(40),
+          ),
         ),
       ],
     );

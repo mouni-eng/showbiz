@@ -9,6 +9,7 @@ import 'package:flyerdeal/services/language_service.dart';
 import 'package:flyerdeal/size_config.dart';
 import 'package:flyerdeal/view_models/auth_cubit/cubit.dart';
 import 'package:flyerdeal/view_models/auth_cubit/states.dart';
+import 'package:flyerdeal/views/AuthViews/LoginViews/reset_password_view.dart';
 import 'package:flyerdeal/views/AuthViews/RegisterViews/registration_layout_view.dart';
 import 'package:flyerdeal/views/client_views/layout_screen.dart';
 import 'package:flyerdeal/widgets/custom_button.dart';
@@ -84,7 +85,12 @@ class LoginView extends StatelessWidget {
                     Align(
                       alignment: Alignment.topRight,
                       child: GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          navigateTo(
+                            view: ForgotPasswordView(),
+                            context: context,
+                          );
+                        },
                         child: CustomText(
                           fontSize: width(14),
                           text: translation(context).forgotPassword,
@@ -110,48 +116,7 @@ class LoginView extends StatelessWidget {
                       text: translation(context).login,
                     ),
                     SizedBox(
-                      height: height(40),
-                    ),
-                    Row(
-                      children: [
-                        const Expanded(
-                          child: Divider(
-                            thickness: 1,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: width(12),
-                          ),
-                          child: CustomText(
-                            fontSize: width(14),
-                            text: translation(context).or,
-                          ),
-                        ),
-                        const Expanded(
-                          child: Divider(
-                            thickness: 1,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: height(40),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SocialBoxWidget(
-                            image: "assets/images/Facebook.svg"),
-                        SizedBox(
-                          width: width(15),
-                        ),
-                        const SocialBoxWidget(
-                            image: "assets/images/Google.svg"),
-                      ],
-                    ),
-                    SizedBox(
-                      height: height(60),
+                      height: height(80),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

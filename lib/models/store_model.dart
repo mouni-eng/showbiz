@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
+
 class StoreModel {
-  String? name, category, image, website;
+  String? name, category, image, website, id;
   
 
   StoreModel.instance();
@@ -16,6 +18,7 @@ class StoreModel {
     category = json['category'];
     image = json['image'];
     website = json['website'];
+    id = json['id'];
   }
 
   Map<String, dynamic> toJson() => {
@@ -23,5 +26,6 @@ class StoreModel {
         'category': category,
         'image': image,
         'website': website,
+        'id': id ?? UniqueKey().hashCode.toString(),
       };
 }

@@ -193,4 +193,13 @@ class AuthCubit extends Cubit<AuthStates> {
       emit(OtpConfirmedErrorState(error: error.message));
     });
   }
+
+  void resetPassword({required String email}) {
+    emit(ResetPasswordLoadingState());
+    _authService.resetPassword(email: email).then((value) {
+      emit(ResetPasswordSuccessState());
+    }).catchError((error) {
+      emit(ResetPasswordErrorState());
+    });
+  }
 }

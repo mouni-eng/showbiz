@@ -1,8 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flyerdeal/models/flyer_model.dart';
-import 'package:flyerdeal/models/store_model.dart';
 import 'package:flyerdeal/models/user_model.dart';
 import 'package:flyerdeal/size_config.dart';
 
@@ -60,32 +57,12 @@ UserModel? userModel;
 
 const String errorMessage = "Something went wrong!";
 const String formMessage = "Complete Form Data";
+const String title = "title";
+const String subtitle = "subTitle";
+const String notifyTable = "notifyTable";
 const userRef = "users";
 const flyerRef = "flyers";
 const storeRef = "stores";
-const favRef = "wishList";
+const favRef = "flyersWishList";
+const storeFav = "storesWishList";
 const categoryRef = "categories";
-const bookingRef = "bookings";
-
-FlyerModel flyerModel = FlyerModel(
-  name: "Peavy Mart Flyers",
-  category: "Electronics",
-  image:
-      "https://static.shopping-canada.com/staples-deal-of-the-week-on-from-february-19-to-february-25-2020-page-10.jpg",
-  store: storeModel,
-  from: DateTime.now(),
-  to: DateTime.now().add(
-    const Duration(
-      days: 20,
-    ),
-  ),
-  flyerPdf: '',
-);
-
-StoreModel storeModel = StoreModel(
-  name: "Peavy Mart",
-  category: "Electronics",
-  website: "https://www.peaveymart.com/",
-  image:
-      "https://th.bing.com/th/id/R.323212658da45fa6a96f1f6552109916?rik=SBx9Ti35cVTxlA&riu=http%3a%2f%2fshopblackfriday.ca%2fwp-content%2fuploads%2f2014%2f11%2fpeaveymart.png&ehk=X9TI8ve0wqnooV8gG%2bpJLS%2b84HvpIIY7p9ktw8%2fDYQQ%3d&risl=&pid=ImgRaw&r=0",
-);

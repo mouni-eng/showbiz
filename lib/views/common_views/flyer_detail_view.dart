@@ -3,12 +3,18 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flyerdeal/constants.dart';
+import 'package:flyerdeal/infrastructure/utils.dart';
+import 'package:flyerdeal/models/flyer_model.dart';
 import 'package:flyerdeal/size_config.dart';
+import 'package:flyerdeal/views/common_views/web_view.dart';
+import 'package:flyerdeal/widgets/custom_navigation.dart';
 import 'package:flyerdeal/widgets/custom_text.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 
 class FlyerDetailsView extends StatelessWidget {
-  const FlyerDetailsView({super.key});
+  const FlyerDetailsView({super.key, required this.flyerModel});
+
+  final FlyerModel flyerModel;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +37,7 @@ class FlyerDetailsView extends StatelessWidget {
                   children: [
                     CustomText(
                       fontSize: width(20),
-                      text: "Peavy Mart Flyer",
+                      text: flyerModel.name!,
                       fontWeight: FontWeight.w600,
                     ),
                     SizedBox(
@@ -39,30 +45,20 @@ class FlyerDetailsView extends StatelessWidget {
                     ),
                     CustomText(
                       fontSize: width(14),
-                      text: "Valid till 6 days",
+                      text: DateUtil.displayDiffrence(
+                          flyerModel.from!, flyerModel.to!),
                       color: color.hintColor,
                       fontWeight: FontWeight.w400,
                     ),
                   ],
                 ),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: color.hintColor.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: SvgPicture.asset(
-                    "assets/icons/heart.svg",
-                    width: width(20),
-                    height: height(20),
-                  ),
-                ),
+                SizedBox(),
               ],
             ),
           ),
           Expanded(
             child: const PDF().cachedFromUrl(
-              'http://africau.edu/images/default/sample.pdf',
+              flyerModel.flyerPdf!,
               placeholder: (progress) => Center(
                 child: Text('$progress %'),
               ),
@@ -87,16 +83,18 @@ class FlyerDetailsView extends StatelessWidget {
                 boxShadow,
               ],
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SvgPicture.asset(
+            child: Center(
+              child: GestureDetector(
+                onTap: () {
+                  navigateTo(
+                    view: CustomWebView(website: flyerModel.store!.website!),
+                    context: context,
+                  );
+                },
+                child: SvgPicture.asset(
                   "assets/icons/stores.svg",
                 ),
-                SvgPicture.asset(
-                  "assets/icons/share.svg",
-                ),
-              ],
+              ),
             ),
           )
         ],

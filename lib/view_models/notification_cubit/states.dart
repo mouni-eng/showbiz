@@ -4,8 +4,8 @@ abstract class NotificationState {}
 
 class NotificationInitial extends NotificationState {}
 
-class NotificationLoaded extends NotificationState {
-  final List<RemoteMessage> messages;
+class NotificationLoadingState extends NotificationState {}
 
-  NotificationLoaded(this.messages);
-}
+class NotificationSuccessState extends NotificationState {}
+
+class NotificationErrorState extends NotificationState {}

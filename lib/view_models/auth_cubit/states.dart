@@ -17,6 +17,12 @@ class RegisterErrorState extends AuthStates {
   RegisterErrorState({this.error});
 }
 
+class ResetPasswordLoadingState extends AuthStates {}
+
+class ResetPasswordSuccessState extends AuthStates {}
+
+class ResetPasswordErrorState extends AuthStates {}
+
 class LogInLoadingState extends AuthStates {}
 
 class LogInSuccessState extends AuthStates {}

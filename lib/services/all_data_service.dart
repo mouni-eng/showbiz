@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flyerdeal/constants.dart';
+import 'package:flyerdeal/models/category_model.dart';
 import 'package:flyerdeal/models/flyer_model.dart';
 import 'package:flyerdeal/models/store_model.dart';
 import 'package:flyerdeal/models/user_model.dart';
@@ -25,6 +26,16 @@ class AllDataService {
       }
     });
     return flyers;
+  }
+
+  Future<List<CategoryModel>> getAllCategories() async{
+    List<CategoryModel> categories = [];
+    await _firestore.collection(categoryRef).get().then((value) {
+      for (var category in value.docs) {
+        categories.add(CategoryModel.fromJson(category.data()));
+      }
+    });
+    return categories;
   }
 
   Future<List<StoreModel>> getAllStores() async{

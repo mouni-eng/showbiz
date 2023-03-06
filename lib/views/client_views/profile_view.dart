@@ -6,17 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flyerdeal/constants.dart';
-import 'package:flyerdeal/infrastructure/utils.dart';
-import 'package:flyerdeal/main.dart';
-import 'package:flyerdeal/models/language_model.dart';
 import 'package:flyerdeal/services/local/cache_helper.dart';
 import 'package:flyerdeal/size_config.dart';
 import 'package:flyerdeal/views/AuthViews/LoginViews/login_view.dart';
 import 'package:flyerdeal/views/client_views/home_view.dart';
 import 'package:flyerdeal/views/common_views/Notification_view.dart';
-import 'package:flyerdeal/widgets/cached_image.dart';
-import 'package:flyerdeal/widgets/choose_dialog.dart';
-import 'package:flyerdeal/widgets/circle_image.dart';
+import 'package:flyerdeal/views/common_views/help_support_view.dart';
 import 'package:flyerdeal/widgets/custom_navigation.dart';
 import 'package:flyerdeal/widgets/custom_text.dart';
 
@@ -136,33 +131,18 @@ class ProfileView extends StatelessWidget {
                             img: "assets/images/moon.svg",
                             isDarkMode: true,
 
-                            /*showDialog(
-                                  barrierColor: Colors.black.withOpacity(0.8),
-                                  context: context,
-                                  builder: (context) => ChooseDialog(
-                                        title: "Choose Language",
-                                        onChanged: (value) async {
-                                          await cubit.switchLanguage(value);
-                                          Navigator.pushAndRemoveUntil(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      MyApp()),
-                                              (route) => false);
-                                        },
-                                        options: Language.languageList()
-                                            .map((e) => ChooseDialogOption(
-                                                key: e.languageCode,
-                                                value: e.name))
-                                            .toList(),
-                                        selectedKey: cubit.language,
-                                      ));*/
+                            
                           ),
                           const Divider(),
                           CustomProfileListTile(
                             title: "Help And Support",
                             img: "assets/images/help.svg",
-                            onPressed: () {},
+                            onPressed: () {
+                              navigateTo(
+                                view: const HelpAndSupportView(),
+                                context: context,
+                              );
+                            },
                           ),
                           const Divider(),
                           CustomProfileListTile(
@@ -335,8 +315,9 @@ class CustomProfileListTile extends StatelessWidget {
                             onChanged: (value) {
                               cubit.onChangeNotify();
                             })
-                        : const Icon(
+                        : Icon(
                             Icons.arrow_forward_ios_rounded,
+                            color: color.primaryColorDark,
                           ),
           );
         });

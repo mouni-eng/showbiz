@@ -1,21 +1,24 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flyerdeal/constants.dart';
+import 'package:flyerdeal/infrastructure/utils.dart';
 import 'package:flyerdeal/models/store_model.dart';
 import 'package:flyerdeal/size_config.dart';
-import 'package:flyerdeal/view_models/stores_cubit/cubit.dart';
-import 'package:flyerdeal/view_models/stores_cubit/states.dart';
+import 'package:flyerdeal/view_models/home_cubit/cubit.dart';
+import 'package:flyerdeal/view_models/home_cubit/states.dart';
+import 'package:flyerdeal/view_models/wishlist_cubit/cubit.dart';
 import 'package:flyerdeal/views/client_views/home_view.dart';
-import 'package:flyerdeal/views/common_views/flyer_detail_view.dart';
 import 'package:flyerdeal/views/common_views/search_view.dart';
 import 'package:flyerdeal/views/common_views/web_view.dart';
 import 'package:flyerdeal/widgets/custom_button.dart';
 import 'package:flyerdeal/widgets/custom_navigation.dart';
 import 'package:flyerdeal/widgets/custom_text.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+
+import '../../view_models/wishlist_cubit/states.dart';
 
 class StoresView extends StatelessWidget {
   const StoresView({super.key});
@@ -23,10 +26,10 @@ class StoresView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var color = Theme.of(context);
-    return BlocConsumer<StoreCubit, StoresStates>(
+    return BlocConsumer<HomeCubit, HomeStates>(
         listener: (context, state) {},
         builder: (context, state) {
-          var cubit = StoreCubit.get(context);
+          var cubit = HomeCubit.get(context);
           return SafeArea(
             child: Padding(
               padding: padding,
@@ -62,22 +65,31 @@ class StoresView extends StatelessWidget {
                   ),
                   SizedBox(
                     height: height(80),
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      physics: const BouncingScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) => CategoryCard(
-                        title: cubit.categories[index],
-                        selected: cubit.category == cubit.categories[index],
-                        onTap: () {
-                          cubit.changeCategory(cubit.categories[index]);
-                        },
-                      ),
-                      separatorBuilder: (context, index) => SizedBox(
-                        width: width(15),
-                      ),
-                      itemCount: cubit.categories.length,
-                    ),
+                    child: ConditionalBuilder(
+                        condition: state is! GetAllCategoriesLoading,
+                        fallback: (context) => const Center(
+                              child: CircularProgressIndicator.adaptive(),
+                            ),
+                        builder: (context) {
+                          return ListView.separated(
+                            shrinkWrap: true,
+                            physics: const BouncingScrollPhysics(),
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) => CategoryCard(
+                              title: cubit.categories[index].key!,
+                              selected:
+                                  cubit.category == cubit.categories[index].key,
+                              onTap: () {
+                                cubit.changeCategory(
+                                    cubit.categories[index].key!);
+                              },
+                            ),
+                            separatorBuilder: (context, index) => SizedBox(
+                              width: width(15),
+                            ),
+                            itemCount: cubit.categories.length,
+                          );
+                        }),
                   ),
                   SizedBox(
                     height: height(25),
@@ -87,12 +99,16 @@ class StoresView extends StatelessWidget {
                       shrinkWrap: true,
                       physics: const BouncingScrollPhysics(),
                       itemBuilder: (context, index) => StoreHorizontalCard(
-                        storeModel: cubit.stores[index],
+                        storeModel: cubit.category == null
+                            ? cubit.stores[index]
+                            : cubit.filterdStores[index],
                       ),
                       separatorBuilder: (context, index) => SizedBox(
                         height: height(25),
                       ),
-                      itemCount: cubit.stores.length,
+                      itemCount: cubit.category == null
+                          ? cubit.stores.length
+                          : cubit.filterdStores.length,
                     ),
                   ),
                 ],
@@ -114,7 +130,7 @@ class StoreHorizontalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var color = Theme.of(context);
-    
+
     return Container(
       width: double.infinity,
       height: height(120),
@@ -158,7 +174,31 @@ class StoreHorizontalCard extends StatelessWidget {
                     SizedBox(
                       width: width(5),
                     ),
-                    const FavouriteButton(),
+                    BlocConsumer<WishListCubit, WishListStates>(
+                        listener: (context, state) {},
+                        builder: (context, state) {
+                          WishListCubit cubit = WishListCubit.get(context);
+                          return ConditionalBuilder(
+                              condition: state is! GetWishListLoadingState,
+                              fallback: (context) => Container(),
+                              builder: (context) {
+                                return FavouriteButton(
+                                  onPressed: () {
+                                    cubit.toogleStoreFavourite(
+                                      isFavourite: CheckUtil.isStoreFavourite(
+                                        storeModel: storeModel,
+                                        favourites: cubit.stores,
+                                      ),
+                                      store: storeModel,
+                                    );
+                                  },
+                                  isFavourite: CheckUtil.isStoreFavourite(
+                                    storeModel: storeModel,
+                                    favourites: cubit.stores,
+                                  ),
+                                );
+                              });
+                        }),
                   ],
                 ),
                 SizedBox(
